@@ -1,6 +1,8 @@
 package be.pxl.basic_security.model;
 
 import javax.persistence.*;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -16,6 +18,13 @@ public class User {
 
     @Transient
     private String passwordConfirm;
+
+
+    @OneToMany(targetEntity=Message.class)
+    private List<Message> inbox;
+
+    @OneToMany(targetEntity=Message.class)
+    private List<Message> outbox;
 
     @ManyToMany
     private Set<Role> roles;
@@ -58,5 +67,35 @@ public class User {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public List<Message> getInbox() {
+        return inbox;
+    }
+
+    public void setInbox(List<Message> inbox) {
+        this.inbox = inbox;
+    }
+
+    public List<Message> getOutbox() {
+        return outbox;
+    }
+
+    public void setOutbox(List<Message> outbox) {
+        this.outbox = outbox;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(username, user.username) &&
+                Objects.equals(password, user.password);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(username, password);
     }
 }

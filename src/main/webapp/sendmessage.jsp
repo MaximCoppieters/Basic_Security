@@ -6,7 +6,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Create an account</title>
+    <title>Create an account ${pageContext.request}</title>
     <link href="${contextPath}/resources/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
@@ -17,20 +17,25 @@
         </form>
         <div class="container w-50 p-3">
           <header class="d-flex bg-secondary">
-              <h1>Welcome ${pageContext.request.userPrincipal.name}</h1>
+              <h1>Send a message</h1>
               <a onclick="document.forms['logoutForm'].submit()">
                   <div class="btn btn-lg btn-primary">
                       Logout
                   </div>
               </a>
           </header>
-            <h2>What would you like to do?</h2>
-            <a href="${contextPath}/sendmessage">
-                <div>Send a message</div>
-            </a>
-            <a href="${contextPath}/readmessages">
-                <div>Read my messages</div>
-            </a>
+            <h2>Select a user to send a message </h2>
+            <form action="post" class="w-50" action="${contextPath}/sendmessage" class="form-signin">
+                <select class="form-control">
+                    <option value="john">John</option>
+                    <option value="michael">Michael</option>
+                </select>
+                <h2>Fill in a message</h2>
+                <textarea class="form-control"></textarea>
+                <button type="submit" class="btn btn-lg btn-primary">
+                    Send Message
+                </button>
+            </form>
         </div>
     </c:if>
   </div>

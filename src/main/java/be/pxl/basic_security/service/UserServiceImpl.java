@@ -1,6 +1,8 @@
 package be.pxl.basic_security.service;
 
+import be.pxl.basic_security.model.Message;
 import be.pxl.basic_security.model.User;
+import be.pxl.basic_security.repository.MessageRepository;
 import be.pxl.basic_security.repository.RoleRepository;
 import be.pxl.basic_security.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private RoleRepository roleRepository;
     @Autowired
+    private MessageRepository messageRepository;
+    @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
@@ -29,4 +33,11 @@ public class UserServiceImpl implements UserService {
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
+
+    @Override
+    public void sendMessage(Message message) {
+
+    }
+
+
 }

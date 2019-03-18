@@ -54,6 +54,18 @@ public class UserController {
         return "login";
     }
 
+    @GetMapping("/sendmessage")
+    public String sendMessage(Model model, String error, String logout) {
+
+        return "sendmessage";
+    }
+
+    @GetMapping("/readmessages")
+    public String readMessages(Model model, String error, String logout) {
+
+        return "readmessages";
+    }
+
     @GetMapping({"/", "/welcome"})
     public String welcome(Model model) {
         return "welcome";

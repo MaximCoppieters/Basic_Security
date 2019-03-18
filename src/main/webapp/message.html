@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Send a message!</title>
+      <link href="resources/css/bootstrap.min.css" rel="stylesheet">
+      <link href="resources/css/common.css" rel="stylesheet">
+    </head>
+    <body>
+        <header class="d-flex bg-secondary">
+            <h2>Welcome ${pageContext.request.userPrincipal.name}</h2>
+            <a onclick="document.forms['logoutForm'].submit()">
+                <div class="btn btn-lg btn-primary">
+                    Logout
+                </div>
+            </a>
+        </header>
+        <div class="container w-50 p-3">
+            <h1>Welcome {User}</h1>
+            <h2>Select a user to send a message to</h2>
+            <form action="post" class="w-50">
+                <select class="form-control">
+                    <option value="john">John</option>
+                    <option value="michael">Michael</option>
+                </select>
+                <h2>Fill in a message</h2>
+                <textarea class="form-control"></textarea>
+                <button type="submit" class="btn btn-lg btn-primary">
+                    Send Message
+                </button>
+            </form>
+        </div>
+    </body>
+</html>
