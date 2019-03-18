@@ -10,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -17,8 +18,6 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
     @Autowired
     private RoleRepository roleRepository;
-    @Autowired
-    private MessageRepository messageRepository;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -30,14 +29,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public List<User> getAll() {
+        return userRepository.findAll();
     }
 
     @Override
-    public void sendMessage(Message message) {
-
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
-
-
 }

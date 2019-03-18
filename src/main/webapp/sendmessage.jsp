@@ -18,20 +18,29 @@
         <div class="container w-50 p-3">
           <header class="d-flex bg-secondary">
               <h1>Send a message</h1>
+              <a href="${contextPath}/welcome">
+                  <div class="btn btn-lg btn-primary">Home</div>
+              </a>
               <a onclick="document.forms['logoutForm'].submit()">
                   <div class="btn btn-lg btn-primary">
                       Logout
                   </div>
               </a>
           </header>
-            <h2>Select a user to send a message </h2>
-            <form action="post" class="w-50" action="${contextPath}/sendmessage" class="form-signin">
-                <select class="form-control">
-                    <option value="john">John</option>
-                    <option value="michael">Michael</option>
+            <h2>Select a user to send a message to</h2>
+            <form method="post" class="w-50" class="form-signin">
+                <input type="hidden"
+                       name="${_csrf.parameterName}"
+                       value="${_csrf.token}"/>
+                <select name="receiverName" class="form-control">
+                    <c:forEach items="${users}" var="user">
+                        <option value="">
+                            <c:out value="${user.username}"/>
+                        </option>
+                    </c:forEach>
                 </select>
                 <h2>Fill in a message</h2>
-                <textarea class="form-control"></textarea>
+                <textarea name="messageContent" class="form-control"></textarea>
                 <button type="submit" class="btn btn-lg btn-primary">
                     Send Message
                 </button>

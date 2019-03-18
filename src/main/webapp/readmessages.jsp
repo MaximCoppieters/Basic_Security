@@ -18,12 +18,32 @@
         <div class="container w-50 p-3">
           <header class="d-flex bg-secondary">
               <h1>Your messages</h1>
+              <a href="${contextPath}/welcome">
+                  <div class="btn btn-lg btn-primary">Home</div>
+              </a>
               <a onclick="document.forms['logoutForm'].submit()">
                   <div class="btn btn-lg btn-primary">
                       Logout
                   </div>
               </a>
           </header>
+            <c:choose>
+                <c:when test="${messages.size() > 0}">
+                    <c:forEach items="${messages}" var="message">
+                        <div id="messages-container">
+                            <div class="sender">
+                                <c:out value="${message.sender.username}"/>
+                            </div>
+                            <div class="message">
+                                <c:out value="${message.content}"/>
+                            </div>
+                        </div>
+                    </c:forEach>
+                </c:when>
+                <c:otherwise>
+                    <h3>You do not have any messages currently</h3>
+                </c:otherwise>
+            </c:choose>
         </div>
     </c:if>
   </div>
