@@ -32,14 +32,17 @@ public class MessageController {
     }
 
     @PostMapping("/sendmessage")
-    public String send(@RequestParam String contentMessage, @RequestParam String receiverName) {
-        System.err.println(contentMessage);
-        System.err.println(receiverName);
+    public String send(@RequestParam("messageContent") String messageContent,
+                       @RequestParam("receiverName") String receiverName) {
         String senderName = getActiveUserName();
         User sender = userService.findByUsername(senderName);
         User receiver = userService.findByUsername(receiverName);
 
-        Message message = new Message(contentMessage, sender, receiver);
+        Message message = new Message(messageContent, sender, receiver);
+
+        sender.getOutbox().add(message);
+        receiver.getInbox().add(message);
+
         messageService.sendMessage(message);
 
         return "redirect:/welcome";

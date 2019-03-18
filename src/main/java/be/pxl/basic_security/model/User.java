@@ -20,7 +20,7 @@ public class User {
     private String passwordConfirm;
 
 
-    @OneToMany(targetEntity=Message.class)
+    @OneToMany(fetch = FetchType.EAGER, targetEntity=Message.class)
     private List<Message> inbox;
 
     @OneToMany(targetEntity=Message.class)

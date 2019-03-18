@@ -34,7 +34,7 @@
                        value="${_csrf.token}"/>
                 <select name="receiverName" class="form-control">
                     <c:forEach items="${users}" var="user">
-                        <option value="">
+                        <option value="${user.username}">
                             <c:out value="${user.username}"/>
                         </option>
                     </c:forEach>

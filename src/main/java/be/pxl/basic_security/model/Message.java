@@ -11,9 +11,13 @@ public class Message {
 
     @ManyToOne
     private User sender;
+
     @ManyToOne
     private User receiver;
+
     private String content;
+
+    public Message() { }
 
     public Message(String content, User sender, User receiver) {
         this.content = content;
