@@ -19,6 +19,13 @@ public class User {
     @Transient
     private String passwordConfirm;
 
+    @Lob
+    @Column(columnDefinition="LONGTEXT")
+    private String privateKey;
+
+    @Lob
+    @Column(columnDefinition="LONGTEXT")
+    private String publicKey;
 
     @OneToMany(fetch = FetchType.EAGER, targetEntity=Message.class)
     private List<Message> inbox;
@@ -83,6 +90,22 @@ public class User {
 
     public void setOutbox(List<Message> outbox) {
         this.outbox = outbox;
+    }
+
+    public String getPrivateKey() {
+        return privateKey;
+    }
+
+    public void setPrivateKey(String privateKey) {
+        this.privateKey = privateKey;
+    }
+
+    public String getPublicKey() {
+        return publicKey;
+    }
+
+    public void setPublicKey(String publicKey) {
+        this.publicKey = publicKey;
     }
 
     @Override

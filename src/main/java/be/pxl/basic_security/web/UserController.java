@@ -10,6 +10,10 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+
 @Controller
 public class UserController {
     @Autowired
@@ -35,6 +39,14 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             return "registration";
         }
+
+        KeyPair keypair = userService.generateKeypair();
+
+        String privateUserKey = keypair.getPrivate().toString();
+        String publicUserKey = keypair.getPublic().toString();
+
+        userForm.setPrivateKey(privateUserKey);
+        userForm.setPublicKey(publicUserKey);
 
         userService.save(userForm);
 
