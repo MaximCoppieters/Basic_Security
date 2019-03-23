@@ -1,7 +1,8 @@
 package be.pxl.basic_security.web;
 
 import be.pxl.basic_security.model.User;
-import be.pxl.basic_security.service.SecurityService;
+import be.pxl.basic_security.service.AuthenticationService;
+import be.pxl.basic_security.service.RsaService;
 import be.pxl.basic_security.service.UserService;
 import be.pxl.basic_security.validator.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.KeyPair;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import java.util.Base64;
 
 @Controller
 public class UserController {
@@ -20,10 +20,13 @@ public class UserController {
     private UserService userService;
 
     @Autowired
-    private SecurityService securityService;
+    private AuthenticationService authenticationService;
 
     @Autowired
     private UserValidator userValidator;
+
+    @Autowired
+    private RsaService rsaService;
 
     @GetMapping("/registration")
     public String registration(Model model) {
@@ -40,17 +43,17 @@ public class UserController {
             return "registration";
         }
 
-        KeyPair keypair = userService.generateKeypair();
+        KeyPair keypair = rsaService.generateKeyPair();
 
-        String privateUserKey = keypair.getPrivate().toString();
-        String publicUserKey = keypair.getPublic().toString();
+        String privateUserKey = rsaService.getEncodedKey(keypair.getPrivate());
+        String publicUserKey = rsaService.getEncodedKey(keypair.getPublic());
 
         userForm.setPrivateKey(privateUserKey);
         userForm.setPublicKey(publicUserKey);
 
         userService.save(userForm);
 
-        securityService.autoLogin(userForm.getUsername(), userForm.getPasswordConfirm());
+        authenticationService.autoLogin(userForm.getUsername(), userForm.getPasswordConfirm());
 
         return "redirect:/welcome";
     }

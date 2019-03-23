@@ -3,6 +3,7 @@ package be.pxl.basic_security.web;
 import be.pxl.basic_security.model.Message;
 import be.pxl.basic_security.model.User;
 import be.pxl.basic_security.service.MessageService;
+import be.pxl.basic_security.service.RsaService;
 import be.pxl.basic_security.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,6 +14,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.security.Key;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.List;
 
 @Controller
@@ -22,6 +26,8 @@ public class MessageController {
     private UserService userService;
     @Autowired
     private MessageService messageService;
+    @Autowired
+    private RsaService rsaService;
 
     @GetMapping("/sendmessage")
     public String loadSendMessagePage(Model model) {
@@ -38,7 +44,10 @@ public class MessageController {
         User sender = userService.findByUsername(senderName);
         User receiver = userService.findByUsername(receiverName);
 
-        Message message = new Message(messageContent, sender, receiver);
+        Key receiverPublicKey = rsaService.getDecodedKey(receiver.getPublicKey(), PublicKey.class);
+
+        String encryptedContent = rsaService.encrypt(messageContent, receiverPublicKey);
+        Message message = new Message(encryptedContent, sender, receiver);
 
         sender.getOutbox().add(message);
         receiver.getInbox().add(message);
@@ -53,7 +62,13 @@ public class MessageController {
         String activeUsername = getActiveUserName();
 
         System.out.println("active user: " + activeUsername);
+        User user = userService.findByUsername(activeUsername);
         List<Message> userInbox = messageService.findInboxFromUserName(activeUsername);
+
+        Key userPrivateKey = rsaService.getDecodedKey(user.getPrivateKey(), PrivateKey.class);
+
+        userInbox.forEach(message -> rsaService.decrypt(message.getContent(), userPrivateKey));
+
 
         model.addAttribute("messages", userInbox);
 
