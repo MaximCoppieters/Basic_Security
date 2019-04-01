@@ -4,10 +4,24 @@ body {
     background-color: #eee;
 }
 
+#message-input-box {
+    height: 20vh;
+}
+
+.btn {
+    margin-top: 20px;
+}
+
 .form-signin {
     max-width: 330px;
     padding: 15px;
     margin: 0 auto;
+}
+
+#login-bar {
+    flex-direction: row;
+    display: flex;
+    justify-content: space-between;
 }
 
 .form-signin .form-signin-heading,

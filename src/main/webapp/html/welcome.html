@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Create an account</title>
+    <link href="../resources/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../resources/css/common.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <c:if test="${pageContext.request.userPrincipal.name != null}">
+        <form id="logoutForm" method="POST" action="${contextPath}/logout">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+        </form>
+        <div class="container w-50 p-3 ">
+            <header id="login-bar" class="bg-secondary">
+                <h2>Welcome ${pageContext.request.userPrincipal.name}</h2>
+                <div>
+                    <a onclick="document.forms['logoutForm'].submit()">
+                        <div class="btn btn-lg btn-primary">
+                            Home
+                        </div>
+                    </a>
+                    <a onclick="document.forms['logoutForm'].submit()">
+                        <div class="btn btn-lg btn-primary">
+                            Logout
+                        </div>
+                    </a>
+                </div>
+            </header>
+            <h2>What would you like to do?</h2>
+            <a href="${contextPath}/sendmessage">
+                <div class="btn btn-lg btn-primary">Send a message</div>
+            </a>
+            <a href="${contextPath}/readmessages">
+                <div class="btn btn-lg btn-primary">Read my messages</div>
+            </a>
+        </div>
+    </c:if>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="${contextPath}/resources/js/bootstrap.min.js"></script>
+</body>
+</html>

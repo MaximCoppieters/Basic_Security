@@ -12,6 +12,7 @@ target/
 
 # Generated files
 .idea/**/contentModel.xml
+messages/
 
 # Sensitive or high-churn files
 .idea/**/dataSources/
