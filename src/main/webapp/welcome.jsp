@@ -8,27 +8,21 @@
     <meta charset="utf-8">
     <title>Create an account</title>
     <link href="${contextPath}/resources/css/bootstrap.min.css" rel="stylesheet">
+    <link href="${contextPath}/resources/css/common.css" rel="stylesheet">
 </head>
 <body>
   <div class="container">
+      <%@ include file="header.jsp"%>
     <c:if test="${pageContext.request.userPrincipal.name != null}">
         <form id="logoutForm" method="POST" action="${contextPath}/logout">
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         </form>
         <div class="container w-50 p-3">
-          <header class="d-flex bg-secondary">
-              <h1>Welcome ${pageContext.request.userPrincipal.name}</h1>
-              <a onclick="document.forms['logoutForm'].submit()">
-                  <div class="btn btn-lg btn-primary">
-                      Logout
-                  </div>
-              </a>
-          </header>
             <h2>What would you like to do?</h2>
-            <a href="${contextPath}/sendmessage">
+            <a class="btn btn-lg btn-primary" href="${contextPath}/sendmessage">
                 <div>Send a message</div>
             </a>
-            <a href="${contextPath}/readmessages">
+            <a class="btn btn-lg btn-primary" href="${contextPath}/readmessages">
                 <div>Read my messages</div>
             </a>
         </div>

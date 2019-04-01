@@ -1,9 +1,7 @@
 package be.pxl.basic_security.web;
 
 import be.pxl.basic_security.model.User;
-import be.pxl.basic_security.service.AuthenticationService;
-import be.pxl.basic_security.service.RsaService;
-import be.pxl.basic_security.service.UserService;
+import be.pxl.basic_security.service.*;
 import be.pxl.basic_security.validator.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,6 +25,13 @@ public class UserController {
 
     @Autowired
     private RsaService rsaService;
+
+    @Autowired
+    private AesService aesService;
+
+    @Autowired
+    private ShaService shaService;
+
 
     @GetMapping("/registration")
     public String registration(Model model) {

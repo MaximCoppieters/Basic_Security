@@ -8,6 +8,7 @@
     <meta charset="utf-8">
     <title>Create an account ${pageContext.request}</title>
     <link href="${contextPath}/resources/css/bootstrap.min.css" rel="stylesheet">
+    <link href="${contextPath}/resources/css/common.css" rel="stylesheet">
 </head>
 <body>
   <div class="container">
@@ -16,23 +17,14 @@
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         </form>
         <div class="container w-50 p-3">
-          <header class="d-flex bg-secondary">
-              <h1>Your messages</h1>
-              <a href="${contextPath}/welcome">
-                  <div class="btn btn-lg btn-primary">Home</div>
-              </a>
-              <a onclick="document.forms['logoutForm'].submit()">
-                  <div class="btn btn-lg btn-primary">
-                      Logout
-                  </div>
-              </a>
-          </header>
+            <%@ include file="header.jsp"%>
             <c:choose>
                 <c:when test="${messages.size() > 0}">
+                    <div id="messages-container"></div>
                     <c:forEach items="${messages}" var="message">
-                        <div id="messages-container">
-                            <div class="sender">
-                                <c:out value="${message.sender.username}"/>
+                        <div class="message-container panel panel-default">
+                            <div class="sender panel-body">
+                                From: <c:out value="${message.sender.username}"/>
                             </div>
                             <div class="message">
                                 <c:out value="${message.content}"/>

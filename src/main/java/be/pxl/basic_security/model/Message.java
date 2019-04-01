@@ -15,14 +15,22 @@ public class Message {
     @ManyToOne
     private User receiver;
 
+    private String encryptedMessageFileName;
+
+    private String encryptedAesKeyFileName;
+
+    private String hashedMessageFileName;
+
+    // Does not get stored in the database
+    @Transient
     private String content;
 
     public Message() { }
 
-    public Message(String content, User sender, User receiver) {
-        this.content = content;
+    public Message(User sender, User receiver, String content) {
         this.sender = sender;
         this.receiver = receiver;
+        this.content = content;
     }
 
     public User getSender() {
@@ -41,11 +49,35 @@ public class Message {
         this.receiver = receiver;
     }
 
+    public String getEncryptedMessageFileName() {
+        return encryptedMessageFileName;
+    }
+
+    public String getHashedMessageFileName() {
+        return hashedMessageFileName;
+    }
+
+    public void setHashedMessageFileName(String hashedMessageFileName) {
+        this.hashedMessageFileName = hashedMessageFileName;
+    }
+
     public String getContent() {
         return content;
     }
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public void setEncryptedMessageFileName(String messageFileName) {
+        this.encryptedMessageFileName = messageFileName;
+    }
+
+    public String getEncryptedAesKeyFileName() {
+        return encryptedAesKeyFileName;
+    }
+
+    public void setEncryptedAesKeyFileName(String encryptedAesKeyFileName) {
+        this.encryptedAesKeyFileName = encryptedAesKeyFileName;
     }
 }

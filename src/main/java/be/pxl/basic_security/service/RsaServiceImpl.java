@@ -1,15 +1,15 @@
 package be.pxl.basic_security.service;
 
 
-import be.pxl.basic_security.model.Message;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.*;
+import javax.crypto.Cipher;
+import javax.xml.bind.DatatypeConverter;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.List;
 
 @Service
 public class RsaServiceImpl implements RsaService {
@@ -25,16 +25,29 @@ public class RsaServiceImpl implements RsaService {
     }
 
     @Override
-    public String encrypt(String content, Key publicKey) {
-        String encryptedContent = "";
+    public byte[] encrypt(byte[] content, Key key) {
+        byte[] encryptedContent = null;
         try {
-            Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA1AndMGF1Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-            encryptedContent = new String(cipher.doFinal(content.getBytes()));
+            Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+            encryptedContent = cipher.doFinal(content);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return encryptedContent;
+    }
+
+    @Override
+    public byte[] decrypt(byte[] content, Key key) {
+        byte[] decryptedContent = null;
+        try {
+            Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            cipher.init(Cipher.DECRYPT_MODE, key);
+            decryptedContent = cipher.doFinal(content);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return decryptedContent;
     }
 
     @Override
@@ -47,31 +60,18 @@ public class RsaServiceImpl implements RsaService {
         Key key = null;
         try {
             byte[] keyBytes = Base64.decodeBase64(encodedKey);
-            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             if (keyType == PublicKey.class) {
+                X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
                 key = keyFactory.generatePublic(keySpec);
             } else {
+                PKCS8EncodedKeySpec keySpec =
+                        new PKCS8EncodedKeySpec(keyBytes);
                 key = keyFactory.generatePrivate(keySpec);
             }
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (InvalidKeySpecException e) {
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             e.printStackTrace();
         }
         return key;
-    }
-
-    @Override
-    public String decrypt(String encryption, Key privateKey) {
-        String decryptedContent = "";
-        try {
-            Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA1AndMGF1Padding");
-            cipher.init(Cipher.DECRYPT_MODE, privateKey);
-            decryptedContent = new String(cipher.doFinal(encryption.getBytes()));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return decryptedContent;
     }
 }
