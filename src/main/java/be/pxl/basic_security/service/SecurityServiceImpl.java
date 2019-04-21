@@ -11,6 +11,7 @@ import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.Base64;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
@@ -41,10 +42,11 @@ public class SecurityServiceImpl implements SecurityService {
 
         storeEncryptedAesKey(receiverPublicKey, aesKey);
         storeEncryptedMessage(encryptedMessage);
-        storeMessageHash(message.getContent());
+        storeEncryptedMessageHash(message.getContent(), aesKey);
     }
+
     private void storeEncryptedAesKey(Key receiverPublicKey, SecretKey aesKey) throws IOException {
-        byte[] encodedAesKey = aesService.getEncodedKey(aesKey);
+        byte[] encodedAesKey = aesKey.getEncoded();
         byte[] encryptedAesKey = rsaService.encrypt(encodedAesKey, receiverPublicKey);
         String encryptedAesKeyFileName = formTextFileNameWith("aes_key", randomFilePostfix);
         writeToFileWithName(encryptedAesKey, encryptedAesKeyFileName);
@@ -57,10 +59,12 @@ public class SecurityServiceImpl implements SecurityService {
         currentMessage.setEncryptedMessageFileName(encryptedMessageFileName);
     }
 
-    private void storeMessageHash(String plainTextMessage) throws IOException, NoSuchAlgorithmException {
+    private void storeEncryptedMessageHash(String messageContent, SecretKey aesKey)
+                throws IOException, NoSuchAlgorithmException {
         String messageHashFileName = formTextFileNameWith("hashed_message", randomFilePostfix);
-        String messageHash = shaService.getHashOf(plainTextMessage);
-        writeToFileWithName(messageHash, messageHashFileName);
+        String messageHash = shaService.getHashOf(messageContent);
+        String encrypedMessageHash = aesService.encrypt(messageHash, aesKey);
+        writeToFileWithName(encrypedMessageHash, messageHashFileName);
         currentMessage.setHashedMessageFileName(messageHashFileName);
     }
 
@@ -84,7 +88,7 @@ public class SecurityServiceImpl implements SecurityService {
         SecretKey aesKey = recoverAesKey(message, receiverPrivateKey);
         String decryptedMessage = decryptMessageContent(message, aesKey);
         String actualMessageHash = shaService.getHashOf(decryptedMessage);
-        String receivedMessageHash = recoverDecryptedMessageHash(message);
+        String receivedMessageHash = recoverDecryptedMessageHash(message, aesKey);
         boolean messageWasAltered = actualMessageHash.equals(receivedMessageHash);
 
         if (messageWasAltered) {
@@ -106,10 +110,10 @@ public class SecurityServiceImpl implements SecurityService {
         return aesService.decrypt(encryptedMessageContent, aesKey);
     }
 
-    private String recoverDecryptedMessageHash(Message message) throws IOException {
+    private String recoverDecryptedMessageHash(Message message, SecretKey aesKey) throws IOException {
         Path messageHashPath = fileService.getFilePathOf(message.getHashedMessageFileName());
-        Key receiverPrivateKey = rsaService.getDecodedKey(message.getReceiver().getPrivateKey(), PublicKey.class);
         byte[] messageHashEncrypted = fileService.readFileContentAsBytes(messageHashPath);
-        return new String(rsaService.decrypt(messageHashEncrypted, receiverPrivateKey));
+        String messageHashEncryptedEncoded = Base64.getEncoder().encodeToString(messageHashEncrypted);
+        return aesService.decrypt(messageHashEncryptedEncoded, aesKey);
     }
 }

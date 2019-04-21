@@ -7,9 +7,6 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
-import java.security.Key;
-import java.security.KeyFactory;
-import java.security.SecureRandom;
 import java.util.Base64;
 
 @Service
@@ -44,7 +41,7 @@ public class AesServiceImpl implements AesService {
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
             cipher.init(Cipher.DECRYPT_MODE, key);
             decryptedMessage = new String(
-                    cipher.doFinal(Base64.getDecoder().decode(secretMessage.getBytes())));
+                    cipher.doFinal(Base64.getDecoder().decode(secretMessage)));
         }
             catch (Exception e) {
                 e.printStackTrace();
@@ -55,11 +52,6 @@ public class AesServiceImpl implements AesService {
 
     public SecretKey generateKey() { return keygen.generateKey(); }
     public SecretKey extractKeyFromFile(File file){return null;}
-
-    @Override
-    public byte[] getEncodedKey(Key key) {
-        return Base64.getEncoder().encode(key.getEncoded());
-    }
 
     @Override
     public SecretKey getDecodedKey(byte[] encodedKey) {

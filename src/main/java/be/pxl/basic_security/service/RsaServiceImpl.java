@@ -17,7 +17,7 @@ public class RsaServiceImpl implements RsaService {
 
     public RsaServiceImpl() throws NoSuchAlgorithmException {
         keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-        keyPairGenerator.initialize(2048);
+        keyPairGenerator.initialize(1024);
     }
 
     public KeyPair generateKeyPair() {
@@ -25,12 +25,13 @@ public class RsaServiceImpl implements RsaService {
     }
 
     @Override
-    public byte[] encrypt(byte[] content, Key key) {
+    public byte[] encrypt(byte[] content, Key publicKey) {
         byte[] encryptedContent = null;
         try {
             Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, key);
+            cipher.init(Cipher.ENCRYPT_MODE, publicKey);
             encryptedContent = cipher.doFinal(content);
+            System.out.println("Length of RSA encrypted public key cypher: " + encryptedContent.length);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -38,12 +39,13 @@ public class RsaServiceImpl implements RsaService {
     }
 
     @Override
-    public byte[] decrypt(byte[] content, Key key) {
+    public byte[] decrypt(byte[] content, Key privateKey) {
         byte[] decryptedContent = null;
         try {
             Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-            cipher.init(Cipher.DECRYPT_MODE, key);
+            cipher.init(Cipher.DECRYPT_MODE, privateKey);
             decryptedContent = cipher.doFinal(content);
+            System.out.println("Length of RSA decrypted private key cypher: " + decryptedContent.length);
         } catch (Exception e) {
             e.printStackTrace();
         }

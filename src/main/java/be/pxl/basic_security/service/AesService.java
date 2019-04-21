@@ -9,6 +9,5 @@ public interface AesService {
     String decrypt(String secretMessage, SecretKey key);
     SecretKey generateKey();
     SecretKey extractKeyFromFile(File file);
-    byte[] getEncodedKey(Key key);
     Key getDecodedKey(byte[] encodedKey);
 }
