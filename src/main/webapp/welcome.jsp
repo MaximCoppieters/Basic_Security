@@ -19,11 +19,15 @@
         </form>
         <div class="container w-50 p-3">
             <h2>What would you like to do?</h2>
-            <a class="btn btn-lg btn-primary" href="${contextPath}/sendmessage">
-                <div>Send a message</div>
-            </a>
-            <a class="btn btn-lg btn-primary" href="${contextPath}/readmessages">
-                <div>Read my messages</div>
+            <select name="receiverName" class="form-control">
+                <c:forEach items="${users}" var="user">
+                    <option value="${user.username}">
+                        <c:out value="${user.username}"/>
+                    </option>
+                </c:forEach>
+            </select>
+            <a class="btn btn-lg btn-primary" href="${contextPath}/chat">
+                <div>Start chatting</div>
             </a>
         </div>
     </c:if>

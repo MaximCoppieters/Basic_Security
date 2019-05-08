@@ -13,9 +13,9 @@ body {
 }
 
 .form-signin {
-    max-width: 330px;
-    padding: 15px;
+    max-width: 500px;
     margin: 0 auto;
+    height: 50px;
 }
 
 #login-bar {

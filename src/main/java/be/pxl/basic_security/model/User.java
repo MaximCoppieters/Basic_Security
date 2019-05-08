@@ -19,6 +19,9 @@ public class User {
     @Transient
     private String passwordConfirm;
 
+    @Transient
+    private User correspondent;
+
     @Lob
     @Column(columnDefinition="LONGTEXT")
     private String privateKey;
@@ -108,6 +111,14 @@ public class User {
         this.publicKey = publicKey;
     }
 
+    public User getCorrespondent() {
+        return correspondent;
+    }
+
+    public void setCorrespondent(User correspondent) {
+        this.correspondent = correspondent;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -121,4 +132,5 @@ public class User {
     public int hashCode() {
         return Objects.hash(username, password);
     }
+
 }

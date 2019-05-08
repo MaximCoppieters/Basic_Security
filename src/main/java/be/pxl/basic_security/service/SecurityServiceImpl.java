@@ -16,21 +16,24 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class SecurityServiceImpl implements SecurityService {
-    @Autowired
-    private RsaService rsaService;
+    private final RsaService rsaService;
 
-    @Autowired
-    private AesService aesService;
+    private final AesService aesService;
 
-    @Autowired
-    private ShaService shaService;
+    private final ShaService shaService;
 
-    @Autowired
-    private FileService fileService;
+    private final FileService fileService;
 
     private ThreadLocalRandom rng = ThreadLocalRandom.current();
     private int randomFilePostfix;
     private Message currentMessage;
+
+    public SecurityServiceImpl(RsaService rsaService, AesService aesService, ShaService shaService, FileService fileService) {
+        this.rsaService = rsaService;
+        this.aesService = aesService;
+        this.shaService = shaService;
+        this.fileService = fileService;
+    }
 
     public void encryptDiffieHellman(Message message) throws IOException, NoSuchAlgorithmException {
         Key receiverPublicKey = rsaService.getDecodedKey(message.getReceiver().getPublicKey(), PublicKey.class);

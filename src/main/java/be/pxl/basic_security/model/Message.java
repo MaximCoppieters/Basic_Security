@@ -1,10 +1,11 @@
 package be.pxl.basic_security.model;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "message")
-public class Message {
+public class Message implements Comparable<Message> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -14,6 +15,8 @@ public class Message {
 
     @ManyToOne
     private User receiver;
+
+    private LocalDateTime timeSent;
 
     private String encryptedMessageFileName;
 
@@ -79,5 +82,18 @@ public class Message {
 
     public void setEncryptedAesKeyFileName(String encryptedAesKeyFileName) {
         this.encryptedAesKeyFileName = encryptedAesKeyFileName;
+    }
+
+    public LocalDateTime getTimeSent() {
+        return timeSent;
+    }
+
+    public void setTimeSent(LocalDateTime timeSent) {
+        this.timeSent = timeSent;
+    }
+
+    @Override
+    public int compareTo(Message o) {
+        return this.getTimeSent().isBefore(o.getTimeSent()) ? -1 : 1;
     }
 }

@@ -10,28 +10,21 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.KeyPair;
-import java.util.Base64;
+import java.util.List;
 
 @Controller
 public class UserController {
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final AuthenticationService authenticationService;
+    private final UserValidator userValidator;
+    private final RsaService rsaService;
 
-    @Autowired
-    private AuthenticationService authenticationService;
-
-    @Autowired
-    private UserValidator userValidator;
-
-    @Autowired
-    private RsaService rsaService;
-
-    @Autowired
-    private AesService aesService;
-
-    @Autowired
-    private ShaService shaService;
-
+    public UserController(UserService userService, AuthenticationService authenticationService, UserValidator userValidator, RsaService rsaService) {
+        this.userService = userService;
+        this.authenticationService = authenticationService;
+        this.userValidator = userValidator;
+        this.rsaService = rsaService;
+    }
 
     @GetMapping("/registration")
     public String registration(Model model) {
@@ -71,11 +64,6 @@ public class UserController {
         if (logout != null)
             model.addAttribute("message", "You have been logged out successfully.");
 
-        return "login";
-    }
-
-    @GetMapping({"/", "/welcome"})
-    public String welcome(Model model) {
-        return "welcome";
+        return "/login";
     }
 }
