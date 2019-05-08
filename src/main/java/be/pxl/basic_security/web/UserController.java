@@ -53,7 +53,7 @@ public class UserController {
 
         authenticationService.autoLogin(userForm.getUsername(), userForm.getPasswordConfirm());
 
-        return "redirect:/welcome";
+        return "redirect:/login";
     }
 
     @GetMapping("/login")

@@ -2,6 +2,7 @@ package be.pxl.basic_security.model;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @Table(name = "message")
@@ -90,6 +91,12 @@ public class Message implements Comparable<Message> {
 
     public void setTimeSent(LocalDateTime timeSent) {
         this.timeSent = timeSent;
+    }
+
+    public String getDaySent() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE");
+
+        return timeSent.format(formatter);
     }
 
     @Override

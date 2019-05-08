@@ -1,6 +1,8 @@
 package be.pxl.basic_security.model;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -15,6 +17,8 @@ public class User {
     private String username;
 
     private String password;
+
+    private LocalDateTime lastOnline;
 
     @Transient
     private String passwordConfirm;
@@ -113,6 +117,18 @@ public class User {
 
     public User getCorrespondent() {
         return correspondent;
+    }
+
+    public String getLastOnline() {
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ISO_LOCAL_TIME;
+         if (lastOnline != null) {
+            return lastOnline.format(timeFormatter);
+        }
+        return "";
+    }
+
+    public void updateLastOnline() {
+        lastOnline = LocalDateTime.now();
     }
 
     public void setCorrespondent(User correspondent) {

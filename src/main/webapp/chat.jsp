@@ -66,7 +66,7 @@
                                                     <span class="name-meta">${user.username} </span>
                                                 </div>
                                                 <div class="col-sm-4 col-xs-4 pull-right sideBar-time">
-                                                    <span class="time-meta pull-right">18:18 </span>
+                                                    <span class="time-meta pull-right">${user.getLastOnline()}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -105,39 +105,18 @@
 
                     <!-- Message Box -->
                     <div class="row message" id="conversation">
-                        <c:forEach items="${messages}" var="user">
+                        <c:forEach items="${messages}" var="message">
                             <div class="row message-body">
-                                <div class="col-sm-12 message-main-receiver">
-                                    <div class="receiver">
+                                <div class=${message.receiver.username.equals(activeUser) ? 'col-sm-12 message-main-receiver' : 'col-sm-12 message-main-sender'}">
+                                    <div class="${message.receiver.username.equals(activeUser) ? 'receiver' : 'sender'}">
                                         <div class="message-text">
                                                 ${message.content}
                                         </div>
-                                        <span class="message-time pull-right"> Sun </span>
+                                        <span class="message-time pull-right"> ${message.getDaySent()} </span>
                                     </div>
                                 </div>
                             </div>
                         </c:forEach>
-                        <div class="row message-body">
-                            <div class="col-sm-12 message-main-receiver">
-                                <div class="receiver">
-                                    <div class="message-text">
-                                        Hyy, Its Awesome..!
-                                    </div>
-                                    <span class="message-time pull-right"> Sun </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row message-body">
-                            <div class="col-sm-12 message-main-sender">
-                                <div class="sender">
-                                    <div class="message-text">
-                                        Thanks n I know its awesome...!
-                                    </div>
-                                    <span class="message-time pull-right"> Sun </span>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                     <form method="post" id="reply-message">
                         <input type="hidden"

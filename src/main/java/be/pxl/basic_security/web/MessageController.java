@@ -61,6 +61,10 @@ public class MessageController {
                 .filter(message -> message.getReceiver().getUsername().equals(correspondentName))
                 .collect(Collectors.toList());
 
+        for (Message message : outbox) {
+            securityService.decryptDiffieHellman(message);
+        }
+
         inbox.addAll(outbox);
 
         model.addAttribute("activeUser", activeUsername);
