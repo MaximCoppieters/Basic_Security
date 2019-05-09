@@ -20,16 +20,7 @@
         </form>
         <div class="container app">
             <div class="row app-one" id="page">
-                <div class="row newMessage-heading">
-                    <div class="row newMessage-main">
-                        <a href="/login"  class="col-sm-2 col-xs-2 newMessage-back">
-                            <i class="fa fa-home fa-2x" aria-hidden="true"></i>
-                        </a>
-                        <div class="col-sm-10 col-xs-10 newMessage-title">
-                            SecureChat
-                        </div>
-                    </div>
-                </div>
+                <jsp:include page="header.jsp" />
                 <div class="col-sm-4 side">
                     <div class="side-one">
                         <!-- Heading -->
@@ -118,24 +109,25 @@
                             </div>
                         </c:forEach>
                     </div>
-                    <form method="post" id="reply-message">
-                        <input type="hidden"
-                               name="${_csrf.parameterName}"
-                               value="${_csrf.token}"/>
-                        <div id="reply-row">
-                            <input id="message-input" name="messageContent" class="form-control">
-                            <input name="receiverName" hidden>
-                            <button type="submit" class="btn btn-primary">
-                                Send
-                            </button>
-                        </div>
-                    </form>
+            <div class="row chat-box">
+                <form method="post" id="reply-message">
+                    <input type="hidden"
+                           name="${_csrf.parameterName}"
+                           value="${_csrf.token}"/>
+                    <div id="reply-row">
+                        <input id="message-input" name="messageContent" class="form-control">
+                        <input name="receiverName" hidden>
+                        <input type="file" name="file" value="bestand">
+                        <button type="submit" class="btn btn-primary">
+                            Send
+                        </button>
+                    </div>
+                </form>
+            </div>
                 </div>
                     </c:if>
             </div>
-        </div>
     </c:if>
-</div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script src="${contextPath}/resources/js/bootstrap.min.js"></script>
 <script src="${contextPath}/resources/js/scripts.js"></script>

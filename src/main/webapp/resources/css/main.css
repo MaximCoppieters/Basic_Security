@@ -19,8 +19,23 @@ body {
 }
 
 #page {
-  height: 50vh;
-  min-height: 600px;
+  min-height: 500px;
+}
+
+header a {
+  text-decoration: none;
+  color: white;
+}
+
+.tab-item {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.chat-box {
+  display: block;
+  height: 80px;
+  background-color: white;
 }
 
 .app {

@@ -6,17 +6,14 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<header id="login-bar" class="bg-secondary">
-    <h2>Welcome ${pageContext.request.userPrincipal.name}</h2>
-    <div>
-        <a onclick="document.forms['logoutForm'].submit()">
-            <div class="btn btn-lg btn-primary">
-                Home
-            </div>
+<header class="row newMessage-heading">
+    <div class="row newMessage-main d-flex flex-row">
+        <a href="/login"  class="col-sm-1 col-xs-1 newMessage-back">
+            <i class="fa fa-home fa-2x" aria-hidden="true"></i>
         </a>
-        <a onclick="document.forms['logoutForm'].submit()">
-            <div class="btn btn-lg btn-primary">
-                Logout
+        <a href="/">
+            <div class="col-sm-8 col-xs-8 newMessage-title">
+                SecureChat
             </div>
         </a>
     </div>

@@ -30,13 +30,14 @@ public class MessageController {
         this.securityService = securityService;
     }
 
-    @GetMapping({ "/", "/chat" })
-    public String loadSendMessagePage
+    @GetMapping({"/", "/personal-chat" })
+    public String loadChatPage
             (Model model, @RequestParam(value = "correspondent-name", required = false)
                     String correspondentName) throws IOException, NoSuchAlgorithmException {
         String activeUsername = getActiveUserName();
         List<User> correspondents = getCorrespondentsOf(activeUsername);
         User currentUser = userService.findByUsername(activeUsername);
+        currentUser.updateLastOnline();
 
         if (correspondentName != null) {
             User correspondent = userService.findByUsername(correspondentName);
@@ -72,7 +73,33 @@ public class MessageController {
         model.addAttribute("messages", inbox);
         model.addAttribute("correspondent", currentUser.getCorrespondent());
 
-        return "chat";
+        return "personal-chat";
+    }
+
+    @GetMapping("/group-chat")
+    public String loadChatPage
+            (Model model) throws IOException, NoSuchAlgorithmException {
+        String activeUsername = getActiveUserName();
+        User currentUser = userService.findByUsername(activeUsername);
+        currentUser.updateLastOnline();
+
+        List<Message> messages = messageService.findGroupMessages();
+
+        List<User> correspondents = getCorrespondentsOf(activeUsername);
+
+        for (Message message : messages) {
+            try {
+                securityService.decryptDiffieHellman(message);
+            } catch(Exception e) {
+            }
+        }
+
+        model.addAttribute("activeUser", activeUsername);
+        model.addAttribute("users", correspondents);
+        model.addAttribute("messages", messages);
+        model.addAttribute("correspondent", currentUser.getCorrespondent());
+
+        return "personal-chat";
     }
 
     private List<User> getCorrespondentsOf(String username) {
@@ -82,7 +109,7 @@ public class MessageController {
                 .collect(Collectors.toList());
     }
 
-    @PostMapping({"/", "chat"})
+    @PostMapping({"/", "personal-chat" })
     public String send(@RequestParam("messageContent") String messageContent,
                        @RequestParam(value = "correspondent-name", required = false) String correspondentName)
                        throws IOException, NoSuchAlgorithmException {
@@ -98,7 +125,7 @@ public class MessageController {
 
         messageService.sendMessage(message);
 
-        return "redirect:/chat";
+        return "redirect:/personal-chat?correspondent-name=" + correspondentName;
     }
 
     private String getActiveUserName() {

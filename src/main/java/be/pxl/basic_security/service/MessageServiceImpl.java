@@ -9,14 +9,18 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MessageServiceImpl implements MessageService {
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private MessageRepository messageRepository;
+    private final UserRepository userRepository;
+    private final MessageRepository messageRepository;
+
+    public MessageServiceImpl(UserRepository userRepository, MessageRepository messageRepository) {
+        this.userRepository = userRepository;
+        this.messageRepository = messageRepository;
+    }
 
     @Override
     public List<Message> findInboxFromUserName(String username) {
