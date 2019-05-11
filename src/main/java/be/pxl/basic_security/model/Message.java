@@ -1,6 +1,11 @@
 package be.pxl.basic_security.model;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import javax.persistence.*;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -18,16 +23,23 @@ public class Message implements Comparable<Message> {
     private User receiver;
 
     private LocalDateTime timeSent;
-
     private String encryptedMessageFileName;
-
+    private String encryptedAppendixFileName;
     private String encryptedAesKeyFileName;
-
     private String hashedMessageFileName;
+    private String hashedAppendixFileName;
+
+    @Transient
+    private Path appendix;
+    private String appendixFileName;
+
+    private boolean groupChat;
 
     // Does not get stored in the database
     @Transient
     private String content;
+
+    private int fileId;
 
     public Message() { }
 
@@ -35,6 +47,58 @@ public class Message implements Comparable<Message> {
         this.sender = sender;
         this.receiver = receiver;
         this.content = content;
+    }
+
+    public String getAppendixFileName() {
+        return appendixFileName;
+    }
+
+    public String getPublicAppendixFilePath() {
+        return Paths.get("resources", "chat", appendixFileName).toString();
+    }
+
+    public void setAppendixFileName(String appendixFileName) {
+        this.appendixFileName = appendixFileName;
+    }
+
+    public int getFileId() {
+        return fileId;
+    }
+
+    public void setFileId(int fileId) {
+        this.fileId = fileId;
+    }
+
+    public boolean isGroupChat() {
+        return groupChat;
+    }
+
+    public void setGroupChat(boolean groupChat) {
+        this.groupChat = groupChat;
+    }
+
+    public Path getAppendix() {
+        return appendix;
+    }
+
+    public void setAppendix(Path appendix) {
+        this.appendix = appendix;
+    }
+
+    public String getEncryptedAppendixFileName() {
+        return encryptedAppendixFileName;
+    }
+
+    public void setEncryptedAppendixFileName(String encryptedAppendixFileName) {
+        this.encryptedAppendixFileName = encryptedAppendixFileName;
+    }
+
+    public String getHashedAppendixFileName() {
+        return hashedAppendixFileName;
+    }
+
+    public void setHashedAppendixFileName(String hashedAppendixFileName) {
+        this.hashedAppendixFileName = hashedAppendixFileName;
     }
 
     public User getSender() {

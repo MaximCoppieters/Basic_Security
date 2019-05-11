@@ -7,4 +7,6 @@ import java.util.List;
 public interface MessageService {
     List<Message> findInboxFromUserName(String username);
     void sendMessage(Message message);
+    List<Message> findGroupMessages();
+    Message getMessageByFileId(int fileId);
 }

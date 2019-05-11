@@ -2,9 +2,12 @@ package be.pxl.basic_security.web;
 
 import be.pxl.basic_security.model.Message;
 import be.pxl.basic_security.model.User;
+import be.pxl.basic_security.service.FileService;
 import be.pxl.basic_security.service.MessageService;
 import be.pxl.basic_security.service.SecurityService;
 import be.pxl.basic_security.service.UserService;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -12,8 +15,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,11 +30,16 @@ public class MessageController {
     private final UserService userService;
     private final MessageService messageService;
     private final SecurityService securityService;
+    private final FileService fileService;
 
-    public MessageController(UserService userService, MessageService messageService, SecurityService securityService) {
+    public MessageController(UserService userService,
+                             MessageService messageService,
+                             SecurityService securityService,
+                             FileService fileService) {
         this.userService = userService;
         this.messageService = messageService;
         this.securityService = securityService;
+        this.fileService = fileService;
     }
 
     @GetMapping({"/", "/personal-chat" })
@@ -77,29 +89,9 @@ public class MessageController {
     }
 
     @GetMapping("/group-chat")
-    public String loadChatPage
-            (Model model) throws IOException, NoSuchAlgorithmException {
-        String activeUsername = getActiveUserName();
-        User currentUser = userService.findByUsername(activeUsername);
-        currentUser.updateLastOnline();
-
-        List<Message> messages = messageService.findGroupMessages();
-
-        List<User> correspondents = getCorrespondentsOf(activeUsername);
-
-        for (Message message : messages) {
-            try {
-                securityService.decryptDiffieHellman(message);
-            } catch(Exception e) {
-            }
-        }
-
-        model.addAttribute("activeUser", activeUsername);
-        model.addAttribute("users", correspondents);
-        model.addAttribute("messages", messages);
-        model.addAttribute("correspondent", currentUser.getCorrespondent());
-
-        return "personal-chat";
+    @ResponseBody
+    public FileSystemResource downloadAppendix(@Param(value="fileId") int fileId) {
+        return new FileSystemResource("");
     }
 
     private List<User> getCorrespondentsOf(String username) {
@@ -111,12 +103,18 @@ public class MessageController {
 
     @PostMapping({"/", "personal-chat" })
     public String send(@RequestParam("messageContent") String messageContent,
-                       @RequestParam(value = "correspondent-name", required = false) String correspondentName)
+                       @RequestParam(value = "correspondent-name", required = false) String correspondentName,
+                       @RequestParam("appendix") MultipartFile appendix)
                        throws IOException, NoSuchAlgorithmException {
         String senderName = getActiveUserName();
         User sender = userService.findByUsername(senderName);
         User receiver = userService.findByUsername(correspondentName);
         Message message = new Message(sender, receiver, messageContent);
+
+        Path appendixPath = fileService.getPublicFilePathOf(appendix.getOriginalFilename());
+        appendix.transferTo(appendixPath);
+        message.setAppendix(appendixPath);
+        message.setAppendixFileName(appendix.getOriginalFilename());
 
         securityService.encryptDiffieHellman(message);
 

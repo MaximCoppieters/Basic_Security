@@ -9,4 +9,5 @@ public interface FileService {
     void writeToFile(String content, Path filePath) throws IOException;
     void writeToFile(byte[] content, Path filePath) throws IOException;
     Path getFilePathOf(String messageFileName);
+    Path getPublicFilePathOf(String fileName);
 }

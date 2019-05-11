@@ -9,6 +9,8 @@
 .idea/**/shelf
 .idea/
 target/
+chat/
+messages/
 
 # Generated files
 .idea/**/contentModel.xml

@@ -49,6 +49,34 @@ public class AesServiceImpl implements AesService {
         return decryptedMessage;
     }
 
+    @Override
+    public byte[] encrypt(byte[] message, SecretKey key) {
+        byte[] secretMessage = null;
+        try {
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+            secretMessage =  cipher.doFinal(message);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        return secretMessage;
+    }
+
+    @Override
+    public byte[] decrypt(byte[] secretMessage, SecretKey key) {
+        byte[] decryptedMessage = null;
+        try{
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            cipher.init(Cipher.DECRYPT_MODE, key);
+            decryptedMessage = cipher.doFinal(secretMessage);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return decryptedMessage;
+    }
+
 
     public SecretKey generateKey() { return keygen.generateKey(); }
     public SecretKey extractKeyFromFile(File file){return null;}

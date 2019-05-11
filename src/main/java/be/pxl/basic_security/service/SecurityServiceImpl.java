@@ -1,12 +1,15 @@
 package be.pxl.basic_security.service;
 
 import be.pxl.basic_security.model.Message;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -25,7 +28,7 @@ public class SecurityServiceImpl implements SecurityService {
     private final FileService fileService;
 
     private ThreadLocalRandom rng = ThreadLocalRandom.current();
-    private int randomFilePostfix;
+    private int randomFileId;
     private Message currentMessage;
 
     public SecurityServiceImpl(RsaService rsaService, AesService aesService, ShaService shaService, FileService fileService) {
@@ -37,7 +40,8 @@ public class SecurityServiceImpl implements SecurityService {
 
     public void encryptDiffieHellman(Message message) throws IOException, NoSuchAlgorithmException {
         Key receiverPublicKey = rsaService.getDecodedKey(message.getReceiver().getPublicKey(), PublicKey.class);
-        randomFilePostfix = rng.nextInt(0, 1000);
+        randomFileId = rng.nextInt(0, 1000);
+        message.setFileId(randomFileId);
         currentMessage = message;
 
         SecretKey aesKey = aesService.generateKey();
@@ -46,25 +50,47 @@ public class SecurityServiceImpl implements SecurityService {
         storeEncryptedAesKey(receiverPublicKey, aesKey);
         storeEncryptedMessage(encryptedMessage);
         storeEncryptedMessageHash(message.getContent(), aesKey);
+
+
+        if (message.getAppendix() != null) {
+            byte[] appendixBytes = Files.readAllBytes(message.getAppendix());
+            byte[] encryptedAppendix = aesService.encrypt(Files.readAllBytes(message.getAppendix()), aesKey);
+            storeEncryptedAppendix(encryptedAppendix);
+            storeEncryptedAppendixHash(appendixBytes, aesKey);
+        }
+    }
+
+    private void storeEncryptedAppendixHash(byte[] appendix, SecretKey aesKey) throws IOException, NoSuchAlgorithmException {
+        String appendixHashFileName = formTextFileNameWith("hashed_appendix", randomFileId);
+        byte[] appendixHash = shaService.getHashOf(appendix);
+        byte[] encrypedMessageHash = aesService.encrypt(appendixHash, aesKey);
+        writeToFileWithName(encrypedMessageHash, appendixHashFileName);
+        currentMessage.setHashedAppendixFileName(appendixHashFileName);
     }
 
     private void storeEncryptedAesKey(Key receiverPublicKey, SecretKey aesKey) throws IOException {
         byte[] encodedAesKey = aesKey.getEncoded();
         byte[] encryptedAesKey = rsaService.encrypt(encodedAesKey, receiverPublicKey);
-        String encryptedAesKeyFileName = formTextFileNameWith("aes_key", randomFilePostfix);
+        String encryptedAesKeyFileName = formTextFileNameWith("aes_key", randomFileId);
         writeToFileWithName(encryptedAesKey, encryptedAesKeyFileName);
         currentMessage.setEncryptedAesKeyFileName(encryptedAesKeyFileName);
     }
 
     private void storeEncryptedMessage(String encryptedMessage) throws IOException {
-        String encryptedMessageFileName = formTextFileNameWith("encrypted_message", randomFilePostfix);
+        String encryptedMessageFileName = formTextFileNameWith("encrypted_message", randomFileId);
         writeToFileWithName(encryptedMessage, encryptedMessageFileName);
         currentMessage.setEncryptedMessageFileName(encryptedMessageFileName);
     }
 
+    private void storeEncryptedAppendix(byte[] appendix) throws IOException {
+        String encryptedMessageFileName = formTextFileNameWith("encrypted_appendix", randomFileId);
+        writeToFileWithName(appendix, encryptedMessageFileName);
+        currentMessage.setEncryptedAppendixFileName(encryptedMessageFileName);
+    }
+
     private void storeEncryptedMessageHash(String messageContent, SecretKey aesKey)
                 throws IOException, NoSuchAlgorithmException {
-        String messageHashFileName = formTextFileNameWith("hashed_message", randomFilePostfix);
+        String messageHashFileName = formTextFileNameWith("hashed_message", randomFileId);
         String messageHash = shaService.getHashOf(messageContent);
         String encrypedMessageHash = aesService.encrypt(messageHash, aesKey);
         writeToFileWithName(encrypedMessageHash, messageHashFileName);
@@ -97,6 +123,14 @@ public class SecurityServiceImpl implements SecurityService {
         if (messageWasAltered) {
             decryptedMessage += "MESSAGE WAS ALTERED";
         }
+        if (message.getEncryptedAppendixFileName() != null) {
+            byte[] decryptedAppendixBytes = decryptAppendix(message, aesKey);
+            byte[] decryptedAppendixHashBytes = recoverDecryptedAppendixHash(message, aesKey);
+            Path decryptedAppendix = fileService.getPublicFilePathOf(message.getAppendixFileName());
+            message.setAppendix(decryptedAppendix);
+            Files.write(decryptedAppendix, decryptedAppendixBytes);
+        }
+
         message.setContent(decryptedMessage);
     }
 
@@ -113,10 +147,22 @@ public class SecurityServiceImpl implements SecurityService {
         return aesService.decrypt(encryptedMessageContent, aesKey);
     }
 
+    private byte[] decryptAppendix(Message message, SecretKey aesKey) throws IOException {
+        Path encryptedMessagePath = fileService.getFilePathOf(message.getEncryptedAppendixFileName());
+        byte[] encryptedMessageContent = fileService.readFileContentAsBytes(encryptedMessagePath);
+        return aesService.decrypt(encryptedMessageContent, aesKey);
+    }
+
     private String recoverDecryptedMessageHash(Message message, SecretKey aesKey) throws IOException {
         Path messageHashPath = fileService.getFilePathOf(message.getHashedMessageFileName());
         byte[] messageHashEncrypted = fileService.readFileContentAsBytes(messageHashPath);
         String messageHashEncryptedEncoded = Base64.getEncoder().encodeToString(messageHashEncrypted);
         return aesService.decrypt(messageHashEncryptedEncoded, aesKey);
+    }
+
+    private byte[] recoverDecryptedAppendixHash(Message message, SecretKey aesKey) throws IOException {
+        Path appendixHashPath = fileService.getFilePathOf(message.getHashedAppendixFileName());
+        byte[] appendixHashEncrypted = fileService.readFileContentAsBytes(appendixHashPath);
+        return aesService.decrypt(appendixHashEncrypted, aesKey);
     }
 }

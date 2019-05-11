@@ -103,6 +103,11 @@
                                         <div class="message-text">
                                                 ${message.content}
                                         </div>
+                                        <c:if test="${not empty message.appendix}">
+                                            <a href="${message.getPublicAppendixFilePath()}">
+                                                ${message.appendixFileName}
+                                            </a>
+                                        </c:if>
                                         <span class="message-time pull-right"> ${message.getDaySent()} </span>
                                     </div>
                                 </div>
@@ -110,14 +115,14 @@
                         </c:forEach>
                     </div>
             <div class="row chat-box">
-                <form method="post" id="reply-message">
+                <form method="post" id="reply-message" enctype="multipart/form-data">
                     <input type="hidden"
                            name="${_csrf.parameterName}"
                            value="${_csrf.token}"/>
                     <div id="reply-row">
                         <input id="message-input" name="messageContent" class="form-control">
                         <input name="receiverName" hidden>
-                        <input type="file" name="file" value="bestand">
+                        <input type="file" name="appendix" multiple>
                         <button type="submit" class="btn btn-primary">
                             Send
                         </button>

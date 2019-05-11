@@ -34,4 +34,20 @@ public class MessageServiceImpl implements MessageService {
         message.setTimeSent(LocalDateTime.now());
         messageRepository.save(message);
     }
+
+    @Override
+    public List<Message> findGroupMessages() {
+        return messageRepository.findAll()
+                .stream()
+                .filter(Message::isGroupChat)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Message getMessageByFileId(int fileId) {
+        return messageRepository.findAll()
+                .stream()
+                .filter(message -> message.getFileId() == fileId)
+                .findFirst().get();
+    }
 }

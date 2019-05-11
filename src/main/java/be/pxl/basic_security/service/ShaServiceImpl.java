@@ -13,4 +13,10 @@ public class ShaServiceImpl implements ShaService {
         byte[] encodedHash = digester.digest(content.getBytes(StandardCharsets.UTF_8));
         return new String(encodedHash);
     }
+
+    @Override
+    public byte[] getHashOf(byte[] content) throws NoSuchAlgorithmException {
+        MessageDigest digester = MessageDigest.getInstance("SHA-256");
+        return digester.digest(content);
+    }
 }

@@ -31,8 +31,16 @@ public class FileServiceImpl implements FileService {
         return Paths.get("src","main", "resources", "messages");
     }
 
+    private Path getPublicResourcesFolder() {
+        return Paths.get("src", "main", "webapp", "resources");
+    }
+
     @Override
     public Path getFilePathOf(String messageFileName) {
         return getMessagesFolder().resolve(messageFileName);
+    }
+
+    public Path getPublicFilePathOf(String fileName) {
+        return getPublicResourcesFolder().resolve(fileName);
     }
 }
