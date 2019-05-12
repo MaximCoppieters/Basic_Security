@@ -69,7 +69,7 @@ public class MessageController {
                 .collect(Collectors.toList());
 
         inbox.addAll(outbox);
-        decryptMessages(inbox);
+        decryptMessages(inbox, currentUser);
 
         model.addAttribute("activeUser", activeUsername);
         model.addAttribute("users", correspondents);
@@ -91,10 +91,9 @@ public class MessageController {
         currentUser.updateLastOnline();
         List<User> correspondents = getCorrespondentsOf(activeUsername);
 
-
         List<Message> groupChatMessages = messageService.findGroupMessages();
 
-        decryptMessages(groupChatMessages);
+        decryptMessages(groupChatMessages, currentUser);
 
         model.addAttribute("activeUser", activeUsername);
         model.addAttribute("users", correspondents);
@@ -103,10 +102,17 @@ public class MessageController {
         return "group-chat";
     }
 
-    private void decryptMessages(List<Message> messages) throws IOException, NoSuchAlgorithmException {
+    private void decryptMessages(List<Message> messages, User currentUser) throws IOException, NoSuchAlgorithmException {
         for (Message message : messages) {
+            if (messageWasNotTargetedAtUser(message, currentUser))
+                continue;
+
             securityService.decryptDiffieHellman(message);
         }
+    }
+
+    private boolean messageWasNotTargetedAtUser(Message message, User user) {
+        return message.getReceiver() != null && !user.getUsername().equals(message.getReceiver().getUsername());
     }
 
     private List<User> getCorrespondentsOf(String username) {
