@@ -20,6 +20,8 @@ public class User {
 
     private LocalDateTime lastOnline;
 
+    private String color;
+
     @Transient
     private String passwordConfirm;
 
@@ -53,6 +55,18 @@ public class User {
 
     public String getUsername() {
         return username;
+    }
+
+    public void setLastOnline(LocalDateTime lastOnline) {
+        this.lastOnline = lastOnline;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 
     public void setUsername(String username) {

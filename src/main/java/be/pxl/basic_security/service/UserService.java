@@ -10,4 +10,5 @@ public interface UserService {
     void save(User user);
     List<User> getAll();
     User findByUsername(String username);
+    String generateUserColor();
 }

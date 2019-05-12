@@ -39,6 +39,8 @@ public class SecurityServiceImpl implements SecurityService {
     }
 
     public void encryptDiffieHellman(Message message) throws IOException, NoSuchAlgorithmException {
+        if (!message.shouldEncryptMessage()) return;
+
         Key receiverPublicKey = rsaService.getDecodedKey(message.getReceiver().getPublicKey(), PublicKey.class);
         randomFileId = rng.nextInt(0, 1000);
         message.setFileId(randomFileId);
@@ -50,7 +52,7 @@ public class SecurityServiceImpl implements SecurityService {
         storeEncryptedAesKey(receiverPublicKey, aesKey);
         storeEncryptedMessage(encryptedMessage);
         storeEncryptedMessageHash(message.getContent(), aesKey);
-
+        message.setContent(encryptedMessage);
 
         if (message.getAppendix() != null) {
             byte[] appendixBytes = Files.readAllBytes(message.getAppendix());
@@ -113,6 +115,8 @@ public class SecurityServiceImpl implements SecurityService {
 
     @Override
     public void decryptDiffieHellman(Message message) throws IOException, NoSuchAlgorithmException {
+        if (!message.shouldEncryptMessage()) return;
+
         Key receiverPrivateKey = rsaService.getDecodedKey(message.getReceiver().getPrivateKey(), PrivateKey.class);
         SecretKey aesKey = recoverAesKey(message, receiverPrivateKey);
         String decryptedMessage = decryptMessageContent(message, aesKey);

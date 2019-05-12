@@ -16,5 +16,15 @@
                 SecureChat
             </div>
         </a>
+        <a href="/group-chat">
+            <div class="col-sm-1 col-xs-1 navigation">
+                Group
+            </div>
+        </a>
+        <a href="/personal-chat">
+            <div class="col-sm-1 col-xs-1 navigation">
+                Personal
+            </div>
+        </a>
     </div>
 </header>

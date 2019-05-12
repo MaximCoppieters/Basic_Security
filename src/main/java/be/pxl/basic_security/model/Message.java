@@ -29,19 +29,24 @@ public class Message implements Comparable<Message> {
     private String hashedMessageFileName;
     private String hashedAppendixFileName;
 
+    private boolean encryptMessage = true;
+
     @Transient
     private Path appendix;
     private String appendixFileName;
 
     private boolean groupChat;
 
-    // Does not get stored in the database
-    @Transient
     private String content;
 
     private int fileId;
 
     public Message() { }
+
+    public Message(User sender, String content) {
+        this.sender = sender;
+        this.content = content;
+    }
 
     public Message(User sender, User receiver, String content) {
         this.sender = sender;
@@ -55,6 +60,14 @@ public class Message implements Comparable<Message> {
 
     public String getPublicAppendixFilePath() {
         return Paths.get("resources", "chat", appendixFileName).toString();
+    }
+
+    public boolean shouldEncryptMessage() {
+        return encryptMessage;
+    }
+
+    public void setEncryptMessage(boolean encryptMessage) {
+        this.encryptMessage = encryptMessage;
     }
 
     public void setAppendixFileName(String appendixFileName) {

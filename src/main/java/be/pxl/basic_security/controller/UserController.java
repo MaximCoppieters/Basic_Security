@@ -1,16 +1,14 @@
-package be.pxl.basic_security.web;
+package be.pxl.basic_security.controller;
 
 import be.pxl.basic_security.model.User;
 import be.pxl.basic_security.service.*;
 import be.pxl.basic_security.validator.UserValidator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.KeyPair;
-import java.util.List;
 
 @Controller
 public class UserController {
@@ -49,12 +47,14 @@ public class UserController {
         userForm.setPrivateKey(privateUserKey);
         userForm.setPublicKey(publicUserKey);
 
+        userForm.setColor(userService.generateUserColor());
         userService.save(userForm);
 
         authenticationService.autoLogin(userForm.getUsername(), userForm.getPasswordConfirm());
 
         return "redirect:/login";
     }
+
 
     @GetMapping("/login")
     public String login(Model model, String error, String logout) {

@@ -10,15 +10,21 @@ import org.springframework.stereotype.Service;
 import java.security.KeyPair;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 
 @Service
 public class UserServiceImpl implements UserService {
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private RoleRepository roleRepository;
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    private static final Random colorGenerator = new Random();
+
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    }
 
     @Override
     public void save(User user) {
@@ -37,5 +43,12 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUsername(username);
 
         return user;
+    }
+
+    @Override
+    public String generateUserColor() {
+        int nextInt = colorGenerator.nextInt(0xffffff + 1);
+
+        return String.format("#%06x", nextInt);
     }
 }
